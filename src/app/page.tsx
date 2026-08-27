@@ -13,6 +13,7 @@ import {
   Layers,
   ArrowRight,
   Sparkles,
+  Building2,
 } from "lucide-react";
 
 interface HealthData {
@@ -72,6 +73,22 @@ export default function HomePage() {
             Platform asesmen kesehatan mental berbasis instrumen resmi{" "}
             <span className="font-semibold text-blue-600 dark:text-blue-400">WHO-5 Well-Being Index</span> dengan pemisahan arsitektur modular, validasi server-side, dan Drizzle ORM.
           </p>
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+            <a
+              href="/admin"
+              className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold shadow-md shadow-purple-600/30 transition flex items-center gap-2"
+            >
+              <Building2 className="w-4 h-4" />
+              <span>Masuk Portal Admin HR</span>
+            </a>
+            <a
+              href="/assessment/demo-who5-session"
+              className="px-5 py-2.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 text-xs font-bold shadow-sm transition flex items-center gap-2"
+            >
+              <span>Demo Asesmen Kandidat</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
         </div>
 
         {/* Live Status Overview Card */}
