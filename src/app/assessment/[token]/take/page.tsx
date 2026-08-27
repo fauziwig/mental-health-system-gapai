@@ -180,8 +180,11 @@ export default function AssessmentTakePage() {
         {/* Progress Bar Line */}
         <div className="max-w-4xl mx-auto mt-2 h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
           <div
-            className="h-full bg-blue-600 transition-all duration-300"
-            style={{ width: `${(answeredCount / totalCount) * 100}%` }}
+            className="h-full transition-all duration-300"
+            style={{
+              width: `${(answeredCount / totalCount) * 100}%`,
+              backgroundColor: "var(--brand-primary, #890DD3)",
+            }}
           />
         </div>
       </header>
@@ -189,8 +192,8 @@ export default function AssessmentTakePage() {
       {/* Main Questionnaire Container */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-8 space-y-6">
         {/* Instruction Banner */}
-        <div className="p-4 rounded-xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200/60 dark:border-blue-900/40 text-xs text-blue-900 dark:text-blue-200 flex items-start gap-3">
-          <HelpCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-800 dark:text-slate-200 flex items-start gap-3">
+          <HelpCircle className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "var(--brand-primary, #890DD3)" }} />
           <div>
             <strong>Pertanyaan Evaluasi (2 Minggu Terakhir):</strong> Silakan tentukan seberapa sering Anda merasakan kondisi-kondisi di bawah ini selama 14 hari terakhir.
           </div>
@@ -212,20 +215,17 @@ export default function AssessmentTakePage() {
             return (
               <div
                 key={item.itemCode}
-                className={`bg-white dark:bg-slate-900 rounded-2xl p-6 border transition-all shadow-sm ${
-                  isAnswered
-                    ? "border-blue-200 dark:border-blue-900/60"
-                    : "border-slate-200 dark:border-slate-800"
-                }`}
+                className="bg-white dark:bg-slate-900 rounded-2xl p-6 border transition-all shadow-sm border-slate-200 dark:border-slate-800"
               >
                 {/* Question Header */}
                 <div className="flex items-start gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
                   <div
                     className={`w-7 h-7 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0 ${
                       isAnswered
-                        ? "bg-blue-600 text-white"
+                        ? "text-white"
                         : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
                     }`}
+                    style={isAnswered ? { backgroundColor: "var(--brand-primary, #890DD3)" } : {}}
                   >
                     {item.orderIndex}
                   </div>
@@ -251,20 +251,32 @@ export default function AssessmentTakePage() {
                         onClick={() => handleSelectOption(item.itemCode, opt.scoreValue)}
                         className={`p-3.5 rounded-xl text-left border text-xs sm:text-sm font-medium transition-all flex items-center justify-between gap-2 ${
                           isSelected
-                            ? "border-blue-600 bg-blue-50/80 dark:bg-blue-950/50 text-blue-900 dark:text-blue-100 shadow-sm ring-1 ring-blue-600"
+                            ? "shadow-sm"
                             : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300"
                         }`}
+                        style={
+                          isSelected
+                            ? {
+                                borderColor: "var(--brand-primary, #890DD3)",
+                                backgroundColor: "var(--brand-primary)15",
+                              }
+                            : {}
+                        }
                       >
                         <div className="space-y-0.5">
                           <div className="font-semibold">{opt.labelId}</div>
                           <div className="text-[11px] text-slate-500 italic">{opt.labelEn}</div>
                         </div>
                         <div
-                          className={`w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0 ${
+                          className="w-4 h-4 rounded-full border flex items-center justify-center flex-shrink-0"
+                          style={
                             isSelected
-                              ? "border-blue-600 bg-blue-600 text-white"
-                              : "border-slate-300 dark:border-slate-600"
-                          }`}
+                              ? {
+                                  borderColor: "var(--brand-primary, #890DD3)",
+                                  backgroundColor: "var(--brand-primary, #890DD3)",
+                                }
+                              : { borderColor: "#cbd5e1" }
+                          }
                         >
                           {isSelected && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                         </div>
@@ -294,7 +306,8 @@ export default function AssessmentTakePage() {
             type="button"
             disabled={!isAllAnswered || submitting}
             onClick={() => setShowConfirmModal(true)}
-            className="w-full sm:w-auto px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl shadow-sm hover:shadow transition disabled:opacity-40 flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-6 py-3 text-white font-semibold text-sm rounded-xl shadow-md transition disabled:opacity-40 flex items-center justify-center gap-2"
+            style={{ backgroundColor: "var(--brand-primary, #890DD3)" }}
           >
             <Send className="w-4 h-4" />
             <span>Kirim Jawaban Asesmen</span>

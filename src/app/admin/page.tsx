@@ -16,6 +16,8 @@ import {
   PlusCircle,
 } from "lucide-react";
 
+import { useBrand } from "@/components/branding/BrandProvider";
+
 interface DashboardData {
   summary: {
     totalSessions: number;
@@ -42,6 +44,7 @@ interface DashboardData {
 }
 
 export default function AdminDashboardPage() {
+  const { brand } = useBrand();
   const [data, setData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -80,7 +83,10 @@ export default function AdminDashboardPage() {
       {/* Top Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <div className="text-xs uppercase tracking-wider font-bold text-purple-600 dark:text-purple-400">
+          <div
+            className="text-xs uppercase tracking-wider font-bold"
+            style={{ color: brand.primaryColor || "var(--brand-primary)" }}
+          >
             Overview & Analytics
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100">
@@ -103,7 +109,8 @@ export default function AdminDashboardPage() {
 
           <a
             href="/admin/sessions"
-            className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold flex items-center gap-2 shadow-sm shadow-purple-600/30 transition"
+            className="px-4 py-2.5 rounded-xl text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition"
+            style={{ backgroundColor: brand.primaryColor || "var(--brand-primary)" }}
           >
             <PlusCircle className="w-4 h-4" />
             <span>Buat Sesi Baru</span>

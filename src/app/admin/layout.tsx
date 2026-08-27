@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/navigation";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
@@ -12,10 +11,10 @@ import {
   Building2,
   Menu,
   X,
-  ShieldCheck,
   User,
   HeartHandshake,
 } from "lucide-react";
+import { useBrand } from "@/components/branding/BrandProvider";
 
 export default function AdminLayout({
   children,
@@ -24,6 +23,7 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { brand } = useBrand();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -74,11 +74,14 @@ export default function AdminLayout({
       {/* Mobile Top Navbar */}
       <div className="md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-purple-600 text-white flex items-center justify-center font-bold text-sm">
+          <div
+            className="w-8 h-8 rounded-lg text-white flex items-center justify-center font-bold text-sm"
+            style={{ backgroundColor: brand.primaryColor || "var(--brand-primary)" }}
+          >
             <Building2 className="w-4 h-4" />
           </div>
-          <span className="font-bold text-sm text-slate-900 dark:text-slate-100">
-            HR Assessment Portal
+          <span className="font-bold text-sm text-slate-900 dark:text-slate-100 truncate max-w-[200px]">
+            {brand.name}
           </span>
         </div>
         <button
@@ -98,14 +101,20 @@ export default function AdminLayout({
         {/* Brand Header */}
         <div className="p-6 border-b border-slate-800/80">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-700 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-purple-900/30">
+            <div
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold shadow-lg"
+              style={{ backgroundColor: brand.primaryColor || "var(--brand-primary)" }}
+            >
               <Building2 className="w-5 h-5" />
             </div>
-            <div>
-              <div className="text-xs uppercase tracking-wider font-bold text-purple-400">
-                GAPAI Platform
+            <div className="min-w-0">
+              <div
+                className="text-xs uppercase tracking-wider font-bold truncate"
+                style={{ color: brand.primaryColor || "var(--brand-primary)" }}
+              >
+                Portal HR
               </div>
-              <div className="text-sm font-bold text-slate-100">HR Assessment</div>
+              <div className="text-sm font-bold text-slate-100 truncate">{brand.name}</div>
             </div>
           </div>
         </div>
@@ -124,9 +133,16 @@ export default function AdminLayout({
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                   item.active
-                    ? "bg-purple-600 text-white shadow-md shadow-purple-600/30 font-bold"
+                    ? "text-white shadow-md font-bold"
                     : "text-slate-300 hover:bg-slate-800/60 hover:text-white"
                 }`}
+                style={
+                  item.active
+                    ? {
+                        backgroundColor: brand.primaryColor || "var(--brand-primary)",
+                      }
+                    : {}
+                }
               >
                 <Icon className="w-4 h-4 flex-shrink-0" />
                 <span>{item.label}</span>
@@ -139,7 +155,10 @@ export default function AdminLayout({
               Instrumen Aktif
             </div>
             <div className="p-3 rounded-xl bg-slate-800/50 border border-slate-700/40 text-xs space-y-1">
-              <div className="font-semibold text-purple-300 flex items-center gap-1.5">
+              <div
+                className="font-semibold flex items-center gap-1.5"
+                style={{ color: brand.primaryColor || "var(--brand-primary)" }}
+              >
                 <HeartHandshake className="w-3.5 h-3.5" />
                 <span>WHO-5 Well-Being</span>
               </div>
@@ -151,7 +170,10 @@ export default function AdminLayout({
         {/* User Profile & Logout Bottom */}
         <div className="p-4 border-t border-slate-800/80 space-y-3">
           <div className="flex items-center gap-3 px-2 py-1">
-            <div className="w-8 h-8 rounded-full bg-purple-600/30 border border-purple-500/40 flex items-center justify-center text-purple-300 font-bold text-xs">
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs text-white"
+              style={{ backgroundColor: brand.primaryColor || "var(--brand-primary)" }}
+            >
               <User className="w-4 h-4" />
             </div>
             <div className="flex-1 min-w-0">

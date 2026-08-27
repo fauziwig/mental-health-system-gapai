@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { assessmentSessions, companies, instruments, assessments } from "@/lib/db/schema";
+import { assessmentSessions, companies, instruments } from "@/lib/db/schema";
+import { ensureBaseEntities } from "@/lib/db/auto-ensure";
 import { eq } from "drizzle-orm";
-import { WHO5_ITEMS, WHO5_OPTIONS, APPLICATION_PLATFORMS } from "@/lib/constants/who5-data";
+import { APPLICATION_PLATFORMS } from "@/lib/constants/who5-data";
 
 export const dynamic = "force-dynamic";
 
@@ -13,10 +14,10 @@ export async function GET(
   const token = params.token;
 
   try {
-    // 1. Cek dari database Supabase jika terhubung
+    const { company: defaultComp } = await ensureBaseEntities();
+
     let sessionData = null;
-    let companyData = null;
-    let instrumentData = null;
+    let companyData = defaultComp;
 
     try {
       const [session] = await db
@@ -32,22 +33,11 @@ export async function GET(
           .from(companies)
           .where(eq(companies.id, session.companyId))
           .limit(1);
-        companyData = comp;
-
-        const [ins] = await db
-          .select()
-          .from(instruments)
-          .where(eq(instruments.id, session.instrumentId))
-          .limit(1);
-        instrumentData = ins;
+        if (comp) companyData = comp;
       }
     } catch (dbErr) {
-      // Database query offline fallback
       console.warn("Database fallback for session fetch:", dbErr);
     }
-
-    // 2. Jika sesi ditemukan di DB atau menggunakan token demo
-    const isDemoToken = token === "demo-who5-session" || !sessionData;
 
     const responsePayload = {
       session: {
@@ -64,7 +54,7 @@ export async function GET(
         id: companyData?.id || "demo-company-id",
         name: companyData?.name || "PT Teknologi Inovasi Indonesia",
         logoUrl: companyData?.logoUrl || null,
-        primaryColor: companyData?.primaryColor || "#2563eb",
+        primaryColor: companyData?.primaryColor || "#890DD3",
       },
       assessment: {
         title: "WHO-5 Well-Being Assessment",

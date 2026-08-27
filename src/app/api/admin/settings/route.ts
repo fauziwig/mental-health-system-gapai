@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { companies } from "@/lib/db/schema";
+import { ensureBaseEntities } from "@/lib/db/auto-ensure";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
@@ -14,35 +15,16 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    let company: {
-      id: string;
-      name: string;
-      primaryColor: string;
-      logoUrl: string | null;
-    } = {
-      id: "demo-comp",
-      name: "PT Teknologi Inovasi Indonesia",
-      primaryColor: "#890DD3",
-      logoUrl: null,
-    };
-
-    try {
-      const [comp] = await db.select().from(companies).limit(1);
-      if (comp) {
-        company = {
-          id: comp.id,
-          name: comp.name,
-          primaryColor: comp.primaryColor || "#890DD3",
-          logoUrl: comp.logoUrl,
-        };
-      }
-    } catch (dbErr) {
-      console.warn("DB settings fallback:", dbErr);
-    }
+    const { company } = await ensureBaseEntities();
 
     return NextResponse.json({
       status: "success",
-      data: company,
+      data: {
+        id: company.id,
+        name: company.name,
+        primaryColor: company.primaryColor || "#890DD3",
+        logoUrl: company.logoUrl,
+      },
     });
   } catch (error: any) {
     return NextResponse.json(
@@ -57,10 +39,18 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validated = settingsSchema.parse(body);
 
+    const { company } = await ensureBaseEntities();
+
+    let updatedCompany = {
+      id: company.id,
+      name: validated.name,
+      primaryColor: validated.primaryColor,
+      logoUrl: validated.logoUrl || null,
+    };
+
     try {
-      const [comp] = await db.select().from(companies).limit(1);
-      if (comp) {
-        await db
+      if (company.id && company.id !== "demo-company-id") {
+        const [updated] = await db
           .update(companies)
           .set({
             name: validated.name,
@@ -68,13 +58,17 @@ export async function POST(request: NextRequest) {
             logoUrl: validated.logoUrl || null,
             updatedAt: new Date(),
           })
-          .where(eq(companies.id, comp.id));
-      } else {
-        await db.insert(companies).values({
-          name: validated.name,
-          primaryColor: validated.primaryColor,
-          logoUrl: validated.logoUrl || null,
-        });
+          .where(eq(companies.id, company.id))
+          .returning();
+
+        if (updated) {
+          updatedCompany = {
+            id: updated.id,
+            name: updated.name,
+            primaryColor: updated.primaryColor || validated.primaryColor,
+            logoUrl: updated.logoUrl,
+          };
+        }
       }
     } catch (dbErr) {
       console.warn("DB settings update fallback:", dbErr);
@@ -83,6 +77,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       status: "success",
       message: "Pengaturan identitas perusahaan berhasil diperbarui.",
+      data: updatedCompany,
     });
   } catch (error: any) {
     if (error instanceof z.ZodError) {

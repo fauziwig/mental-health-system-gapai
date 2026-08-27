@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { BrandProvider } from "@/components/branding/BrandProvider";
 
 export const metadata: Metadata = {
   title: "Mental Health Assessment System | WHO-5",
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="id">
       <body className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
-        {children}
+        <BrandProvider>{children}</BrandProvider>
       </body>
     </html>
   );

@@ -281,7 +281,8 @@ export default function AssessmentWelcomePage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm rounded-xl shadow-sm hover:shadow transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full py-3 px-4 text-white font-semibold text-sm rounded-xl shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                style={{ backgroundColor: data?.company.primaryColor || "var(--brand-primary)" }}
               >
                 {submitting ? (
                   "Menyiapkan Asesmen..."

@@ -8,13 +8,11 @@ import {
   Check,
   ExternalLink,
   Clock,
-  Lock,
   RefreshCw,
   AlertCircle,
   X,
-  Building2,
-  Sparkles,
 } from "lucide-react";
+import { useBrand } from "@/components/branding/BrandProvider";
 
 interface AssessmentSessionItem {
   id: string;
@@ -29,6 +27,7 @@ interface AssessmentSessionItem {
 }
 
 export default function AdminSessionsPage() {
+  const { brand } = useBrand();
   const [sessions, setSessions] = useState<AssessmentSessionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
@@ -48,7 +47,7 @@ export default function AdminSessionsPage() {
       const res = await fetch("/api/admin/sessions");
       const json = await res.json();
       if (json.status === "success") {
-        setSessions(json.data);
+        setSessions(json.data || []);
       }
     } catch (err) {
       console.error("Failed to load sessions:", err);
@@ -92,7 +91,9 @@ export default function AdminSessionsPage() {
       });
 
       const json = await res.json();
-      if (res.ok && json.status === "success") {
+      if (res.ok && json.status === "success" && json.data) {
+        // Optimistic / immediate state update
+        setSessions((prev) => [json.data, ...prev]);
         setShowModal(false);
         setPositionInput("");
         fetchSessions();
@@ -122,7 +123,10 @@ export default function AdminSessionsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <div className="text-xs uppercase tracking-wider font-bold text-purple-600 dark:text-purple-400">
+          <div
+            className="text-xs uppercase tracking-wider font-bold"
+            style={{ color: brand.primaryColor || "var(--brand-primary)" }}
+          >
             Sesi Rekrutmen & Token
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100">
@@ -145,7 +149,8 @@ export default function AdminSessionsPage() {
 
           <button
             onClick={() => setShowModal(true)}
-            className="px-4 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold flex items-center gap-2 shadow-sm shadow-purple-600/30 transition"
+            className="px-4 py-2.5 rounded-xl text-white text-xs font-semibold flex items-center gap-2 shadow-sm transition"
+            style={{ backgroundColor: brand.primaryColor || "var(--brand-primary)" }}
           >
             <PlusCircle className="w-4 h-4" />
             <span>Buat Sesi Asesmen Baru</span>
@@ -168,101 +173,109 @@ export default function AdminSessionsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {sessions.map((ses) => {
-                const isCopied = copiedId === ses.id;
-                const isActive = ses.status === "ACTIVE";
+              {sessions.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-slate-400">
+                    Belum ada sesi asesmen. Klik &quot;Buat Sesi Asesmen Baru&quot; di atas untuk membuat tautan kandidat.
+                  </td>
+                </tr>
+              ) : (
+                sessions.map((ses) => {
+                  const isCopied = copiedId === ses.id;
+                  const isActive = ses.status === "ACTIVE";
 
-                return (
-                  <tr
-                    key={ses.id}
-                    className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition"
-                  >
-                    <td className="py-4 px-4">
-                      <div className="font-bold text-sm text-slate-900 dark:text-slate-100">
-                        {ses.appliedPosition}
-                      </div>
-                      <div className="text-[11px] text-slate-400 font-mono">
-                        Token: {ses.publicToken}
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 text-slate-700 dark:text-slate-300">
-                      <div className="flex items-center gap-1.5 font-medium">
-                        <Clock className="w-3.5 h-3.5 text-blue-500" />
-                        <span>{ses.durationMinutes} Menit</span>
-                      </div>
-                      <div className="text-[11px] text-slate-400">
-                        {ses.allowRetake ? "Boleh Retake" : "1x Kesempatan"}
-                      </div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <span
-                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold ${
-                          isActive
-                            ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900"
-                            : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
-                        }`}
-                      >
+                  return (
+                    <tr
+                      key={ses.id}
+                      className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition"
+                    >
+                      <td className="py-4 px-4">
+                        <div className="font-bold text-sm text-slate-900 dark:text-slate-100">
+                          {ses.appliedPosition}
+                        </div>
+                        <div className="text-[11px] text-slate-400 font-mono">
+                          Token: {ses.publicToken}
+                        </div>
+                      </td>
+                      <td className="py-4 px-4 text-slate-700 dark:text-slate-300">
+                        <div className="flex items-center gap-1.5 font-medium">
+                          <Clock className="w-3.5 h-3.5 text-blue-500" />
+                          <span>{ses.durationMinutes} Menit</span>
+                        </div>
+                        <div className="text-[11px] text-slate-400">
+                          {ses.allowRetake ? "Boleh Retake" : "1x Kesempatan"}
+                        </div>
+                      </td>
+                      <td className="py-4 px-4">
                         <span
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            isActive ? "bg-emerald-500" : "bg-slate-400"
+                          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold ${
+                            isActive
+                              ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900"
+                              : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"
                           }`}
-                        />
-                        {isActive ? "Aktif" : "Ditutup"}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4 text-slate-600 dark:text-slate-400">
-                      {new Date(ses.expiresAt).toLocaleDateString("id-ID", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </td>
-                    <td className="py-4 px-4">
-                      <button
-                        onClick={() => handleCopyLink(ses.publicToken, ses.id)}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition border ${
-                          isCopied
-                            ? "bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/60"
-                            : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700"
-                        }`}
-                      >
-                        {isCopied ? (
-                          <>
-                            <Check className="w-3.5 h-3.5 text-emerald-600" />
-                            <span>Tersalin!</span>
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="w-3.5 h-3.5" />
-                            <span>Salin Tautan</span>
-                          </>
-                        )}
-                      </button>
-                    </td>
-                    <td className="py-4 px-4 text-right space-x-2">
-                      <a
-                        href={`/assessment/${ses.publicToken}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-slate-500 hover:text-purple-600 text-xs font-semibold p-1"
-                        title="Buka Halaman Ujian"
-                      >
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-
-                      {isActive && (
-                        <button
-                          onClick={() => handleCloseSession(ses.id)}
-                          className="text-red-500 hover:text-red-700 text-xs font-semibold p-1"
-                          title="Tutup Sesi"
                         >
-                          Tutup
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              isActive ? "bg-emerald-500" : "bg-slate-400"
+                            }`}
+                          />
+                          {isActive ? "Aktif" : "Ditutup"}
+                        </span>
+                      </td>
+                      <td className="py-4 px-4 text-slate-600 dark:text-slate-400">
+                        {new Date(ses.expiresAt).toLocaleDateString("id-ID", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </td>
+                      <td className="py-4 px-4">
+                        <button
+                          onClick={() => handleCopyLink(ses.publicToken, ses.id)}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition border ${
+                            isCopied
+                              ? "bg-emerald-50 text-emerald-700 border-emerald-300 dark:bg-emerald-950/60"
+                              : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700"
+                          }`}
+                        >
+                          {isCopied ? (
+                            <>
+                              <Check className="w-3.5 h-3.5 text-emerald-600" />
+                              <span>Tersalin!</span>
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="w-3.5 h-3.5" />
+                              <span>Salin Tautan</span>
+                            </>
+                          )}
                         </button>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
+                      </td>
+                      <td className="py-4 px-4 text-right space-x-2">
+                        <a
+                          href={`/assessment/${ses.publicToken}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 text-slate-500 hover:text-purple-600 text-xs font-semibold p-1"
+                          title="Buka Halaman Ujian"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+
+                        {isActive && (
+                          <button
+                            onClick={() => handleCloseSession(ses.id)}
+                            className="text-red-500 hover:text-red-700 text-xs font-semibold p-1"
+                            title="Tutup Sesi"
+                          >
+                            Tutup
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
@@ -274,7 +287,10 @@ export default function AdminSessionsPage() {
           <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-800 max-w-md w-full p-6 sm:p-8 space-y-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-950/60 text-purple-600 flex items-center justify-center">
+                <div
+                  className="w-10 h-10 rounded-xl text-white flex items-center justify-center"
+                  style={{ backgroundColor: brand.primaryColor || "var(--brand-primary)" }}
+                >
                   <CalendarDays className="w-5 h-5" />
                 </div>
                 <div>
@@ -310,7 +326,8 @@ export default function AdminSessionsPage() {
                   value={positionInput}
                   onChange={(e) => setPositionInput(e.target.value)}
                   placeholder="Contoh: Senior Backend Engineer"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-purple-600"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm focus:outline-none focus:ring-2"
+                  style={{ outlineColor: brand.primaryColor }}
                 />
               </div>
 
@@ -322,7 +339,8 @@ export default function AdminSessionsPage() {
                   <select
                     value={durationInput}
                     onChange={(e) => setDurationInput(Number(e.target.value))}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-2"
+                    style={{ outlineColor: brand.primaryColor }}
                   >
                     <option value={10}>10 Menit</option>
                     <option value={15}>15 Menit (Standar)</option>
@@ -338,7 +356,8 @@ export default function AdminSessionsPage() {
                   <select
                     value={expireDaysInput}
                     onChange={(e) => setExpireDaysInput(Number(e.target.value))}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-2 focus:ring-purple-600"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 text-xs focus:outline-none focus:ring-2"
+                    style={{ outlineColor: brand.primaryColor }}
                   >
                     <option value={7}>7 Hari</option>
                     <option value={14}>14 Hari</option>
@@ -359,7 +378,8 @@ export default function AdminSessionsPage() {
                 <button
                   type="submit"
                   disabled={creating}
-                  className="px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-xl shadow-md shadow-purple-600/30 transition disabled:opacity-50"
+                  className="px-5 py-2.5 text-white text-xs font-semibold rounded-xl shadow-md transition disabled:opacity-50"
+                  style={{ backgroundColor: brand.primaryColor || "var(--brand-primary)" }}
                 >
                   {creating ? "Membuat..." : "Buat & Dapatkan Link"}
                 </button>

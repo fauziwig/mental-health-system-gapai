@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { assessmentSessions, companies, instruments, attempts } from "@/lib/db/schema";
-import { desc, eq, sql } from "drizzle-orm";
+import { assessmentSessions } from "@/lib/db/schema";
+import { ensureBaseEntities } from "@/lib/db/auto-ensure";
+import { desc, eq } from "drizzle-orm";
 import crypto from "crypto";
 import { z } from "zod";
 
@@ -38,22 +39,6 @@ export async function GET() {
       console.warn("DB query session list fallback:", dbErr);
     }
 
-    if (sessionsList.length === 0) {
-      sessionsList = [
-        {
-          id: "ses_demo_1",
-          publicToken: "demo-who5-session",
-          appliedPosition: "Frontend Software Engineer",
-          durationMinutes: 15,
-          allowRetake: false,
-          status: "ACTIVE",
-          expiresAt: new Date(Date.now() + 30 * 86400000).toISOString(),
-          createdAt: new Date().toISOString(),
-          attemptCount: 3,
-        },
-      ];
-    }
-
     return NextResponse.json({
       status: "success",
       data: sessionsList,
@@ -73,6 +58,8 @@ export async function POST(request: NextRequest) {
 
     const publicToken = "ses_" + crypto.randomBytes(12).toString("hex");
     const expiresAt = new Date(Date.now() + validated.expireDays * 24 * 60 * 60 * 1000);
+
+    const { company, instrument } = await ensureBaseEntities();
 
     let newSession: {
       id: string;
@@ -95,11 +82,7 @@ export async function POST(request: NextRequest) {
     };
 
     try {
-      // Ambil default company & instrument
-      const [company] = await db.select().from(companies).limit(1);
-      const [instrument] = await db.select().from(instruments).limit(1);
-
-      if (company && instrument) {
+      if (company.id && instrument.id && company.id !== "demo-company-id") {
         const [inserted] = await db
           .insert(assessmentSessions)
           .values({
@@ -117,7 +100,7 @@ export async function POST(request: NextRequest) {
         newSession.id = inserted.id;
       }
     } catch (dbErr) {
-      console.warn("DB session creation fallback:", dbErr);
+      console.warn("DB session insert fallback:", dbErr);
     }
 
     return NextResponse.json({
