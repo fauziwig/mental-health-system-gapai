@@ -186,25 +186,40 @@ export default function HomePage() {
             </ul>
           </div>
 
-          {/* Card 2: Next Steps */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 space-y-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <Layers className="w-5 h-5 text-indigo-600" />
-              Komponen Siap Implementasi
-            </h3>
-            <div className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/40">
-                <span>1. Form Registrasi & Lembar Ujian Kandidat</span>
-                <span className="text-xs font-semibold text-blue-600">Fase 2</span>
+          {/* Card 2: Live Candidate Flow Demo */}
+          <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 space-y-4 flex flex-col justify-between">
+            <div className="space-y-3">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <Layers className="w-5 h-5 text-indigo-600" />
+                Alur Pengalaman Kandidat (Live Demo)
+              </h3>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Uji langsung alur lengkap kandidat mulai dari registrasi data diri, lembar soal 5 butir WHO-5 dengan countdown timer, dan pengiriman skor ke database.
+              </p>
+              <div className="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span>Registrasi data diri & verifikasi token</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span>Countdown timer & auto-submission</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  <span>Scoring Strategy WHO-5 (0-25 / 0-100%)</span>
+                </div>
               </div>
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/40">
-                <span>2. Engine Perhitungan Skor & Interpretasi WHO-5</span>
-                <span className="text-xs font-semibold text-blue-600">Fase 2</span>
-              </div>
-              <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/40">
-                <span>3. Dashboard HR & Manajemen Sesi Asesmen</span>
-                <span className="text-xs font-semibold text-blue-600">Fase 3</span>
-              </div>
+            </div>
+
+            <div className="pt-2">
+              <a
+                href="/assessment/demo-who5-session"
+                className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition"
+              >
+                <span>Buka Demo Asesmen Kandidat</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </a>
             </div>
           </div>
         </div>
