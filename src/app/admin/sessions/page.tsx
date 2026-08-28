@@ -11,6 +11,7 @@ import {
   RefreshCw,
   AlertCircle,
   X,
+  Trash2,
 } from "lucide-react";
 import { useBrand } from "@/components/branding/BrandProvider";
 
@@ -115,6 +116,18 @@ export default function AdminSessionsPage() {
       fetchSessions();
     } catch (err) {
       console.error("Failed to close session:", err);
+    }
+  };
+
+  const handleDeleteSession = async (id: string) => {
+    if (!confirm("Apakah Anda yakin ingin menghapus sesi asesmen ini secara permanen?")) return;
+
+    try {
+      await fetch(`/api/admin/sessions/${id}`, { method: "DELETE" });
+      setSessions((prev) => prev.filter((s) => s.id !== id));
+      fetchSessions();
+    } catch (err) {
+      console.error("Failed to delete session:", err);
     }
   };
 
@@ -265,12 +278,20 @@ export default function AdminSessionsPage() {
                         {isActive && (
                           <button
                             onClick={() => handleCloseSession(ses.id)}
-                            className="text-red-500 hover:text-red-700 text-xs font-semibold p-1"
+                            className="text-amber-600 hover:text-amber-700 text-xs font-semibold p-1"
                             title="Tutup Sesi"
                           >
                             Tutup
                           </button>
                         )}
+
+                        <button
+                          onClick={() => handleDeleteSession(ses.id)}
+                          className="text-red-500 hover:text-red-700 text-xs font-semibold p-1 inline-flex items-center gap-0.5"
+                          title="Hapus Sesi"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </td>
                     </tr>
                   );

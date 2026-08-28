@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { assessmentSessions, companies, instruments } from "@/lib/db/schema";
+import { assessmentSessions, companies } from "@/lib/db/schema";
 import { ensureBaseEntities } from "@/lib/db/auto-ensure";
 import { eq } from "drizzle-orm";
 import { APPLICATION_PLATFORMS } from "@/lib/constants/who5-data";
@@ -37,6 +37,44 @@ export async function GET(
       }
     } catch (dbErr) {
       console.warn("Database fallback for session fetch:", dbErr);
+    }
+
+    // Jika sesi tidak ditemukan dan bukan token demo default
+    if (!sessionData && token !== "demo-who5-session") {
+      return NextResponse.json(
+        {
+          status: "error",
+          code: "SESSION_NOT_FOUND",
+          message: "Tautan sesi asesmen tidak valid atau telah dihapus oleh administrator.",
+        },
+        { status: 404 }
+      );
+    }
+
+    // Validasi Status Sesi: CLOSED / DELETED
+    if (sessionData && (sessionData.status === "CLOSED" || sessionData.status === "DELETED")) {
+      return NextResponse.json(
+        {
+          status: "error",
+          code: "SESSION_CLOSED",
+          message: "Sesi asesmen ini telah ditutup oleh administrator dan tidak lagi menerima pengerjaan.",
+          companyName: companyData.name,
+        },
+        { status: 403 }
+      );
+    }
+
+    // Validasi Masa Berlaku: EXPIRED
+    if (sessionData && sessionData.expiresAt && new Date(sessionData.expiresAt) < new Date()) {
+      return NextResponse.json(
+        {
+          status: "error",
+          code: "SESSION_EXPIRED",
+          message: "Masa berlaku sesi asesmen ini telah berakhir.",
+          companyName: companyData.name,
+        },
+        { status: 403 }
+      );
     }
 
     const responsePayload = {

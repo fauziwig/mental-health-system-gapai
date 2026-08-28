@@ -16,7 +16,7 @@ interface BrandContextType {
 }
 
 const defaultBrand: BrandSettings = {
-  name: "PT Teknologi Inovasi Indonesia",
+  name: "PT Gapai Cita Raharjo",
   primaryColor: "#890DD3",
   logoUrl: null,
 };

@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Sparkles,
   HeartHandshake,
+  ShieldAlert,
 } from "lucide-react";
 
 interface SessionInfo {
@@ -127,6 +128,41 @@ export default function AssessmentWelcomePage() {
         <div className="text-center space-y-3">
           <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Memuat sesi asesmen...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Jika Sesi Tidak Dapat Diakses / Ditutup / Dihapus
+  if (error && !data) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+        <div className="max-w-md w-full bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 text-center space-y-5">
+          <div className="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-900 text-amber-600 flex items-center justify-center mx-auto shadow-sm">
+            <ShieldAlert className="w-8 h-8" />
+          </div>
+
+          <div className="space-y-2">
+            <div className="text-xs uppercase tracking-wider font-bold text-amber-600 dark:text-amber-400">
+              Akses Ditutup
+            </div>
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-slate-100">
+              Sesi Asesmen Tidak Tersedia
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+              {error}
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60 text-xs text-slate-500 text-left space-y-1.5">
+            <div className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <span>Informasi Penting:</span>
+            </div>
+            <p>
+              Tautan asesmen ini sudah tidak aktif atau telah dinonaktifkan oleh tim HR. Jika Anda adalah kandidat yang seharusnya mengikuti tes ini, silakan hubungi tim rekrutmen perusahaan terkait untuk mendapatkan tautan sesi aktif yang baru.
+            </p>
+          </div>
         </div>
       </div>
     );

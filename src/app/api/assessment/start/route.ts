@@ -39,6 +39,26 @@ export async function POST(request: NextRequest) {
 
       const sessionId = session?.id;
 
+      if (session && (session.status === "CLOSED" || session.status === "DELETED")) {
+        return NextResponse.json(
+          {
+            status: "error",
+            message: "Sesi asesmen ini telah ditutup oleh administrator dan tidak lagi menerima pengerjaan.",
+          },
+          { status: 403 }
+        );
+      }
+
+      if (session && session.expiresAt && new Date(session.expiresAt) < new Date()) {
+        return NextResponse.json(
+          {
+            status: "error",
+            message: "Masa berlaku sesi asesmen ini telah berakhir.",
+          },
+          { status: 403 }
+        );
+      }
+
       if (sessionId) {
         // 2. Simpan atau update candidate
         const [cand] = await db

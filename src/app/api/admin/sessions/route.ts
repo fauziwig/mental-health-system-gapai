@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { assessmentSessions } from "@/lib/db/schema";
 import { ensureBaseEntities } from "@/lib/db/auto-ensure";
-import { desc, eq } from "drizzle-orm";
+import { desc, eq, ne } from "drizzle-orm";
 import crypto from "crypto";
 import { z } from "zod";
 
@@ -32,6 +32,7 @@ export async function GET() {
           createdAt: assessmentSessions.createdAt,
         })
         .from(assessmentSessions)
+        .where(ne(assessmentSessions.status, "DELETED"))
         .orderBy(desc(assessmentSessions.createdAt));
 
       sessionsList = data;

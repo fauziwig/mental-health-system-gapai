@@ -17,7 +17,7 @@ export async function ensureBaseEntities() {
       const [newCompany] = await db
         .insert(companies)
         .values({
-          name: "PT Teknologi Inovasi Indonesia",
+          name: "PT Gapai Cita Raharjo",
           primaryColor: "#890DD3",
           logoUrl: null,
         })
@@ -94,7 +94,7 @@ export async function ensureBaseEntities() {
     return {
       company: {
         id: "demo-company-id",
-        name: "PT Teknologi Inovasi Indonesia",
+        name: "PT Gapai Cita Raharjo",
         primaryColor: "#890DD3",
         logoUrl: null,
       },
