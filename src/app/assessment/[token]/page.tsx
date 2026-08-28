@@ -182,7 +182,7 @@ export default function AssessmentWelcomePage() {
                 Portal Asesmen Rekrutmen
               </div>
               <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-                {data?.company.name || "PT Teknologi Inovasi Indonesia"}
+                {data?.company.name || "PT Gapai Cita Raharjo"}
               </h1>
             </div>
           </div>
