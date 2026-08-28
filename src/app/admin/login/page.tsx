@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Lock, Mail, ArrowRight, ShieldCheck, Sparkles, Building2, AlertCircle } from "lucide-react";
+import Image from "next/image";
+import { Lock, Mail, ArrowRight, ShieldCheck, Sparkles, AlertCircle } from "lucide-react";
+import { BrandLogo } from "@/components/branding/BrandLogo";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -44,11 +46,18 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-purple-950 flex items-center justify-center p-4 sm:p-6 lg:p-8">
       <div className="max-w-md w-full space-y-6">
-        {/* Brand Header */}
+        {/* Brand Header with Company Logo Image */}
         <div className="text-center space-y-3">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-purple-600/30 border border-purple-500/40 text-purple-300 shadow-inner">
-            <Building2 className="w-7 h-7" />
+          <div className="inline-flex items-center justify-center p-2 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl mx-auto">
+            <BrandLogo
+              className="w-16 h-16 rounded-xl overflow-hidden shadow-inner bg-white/5"
+              width={64}
+              height={64}
+              alt="Logo Perusahaan"
+              priority
+            />
           </div>
+
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
               Portal Admin HR
@@ -102,41 +111,33 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-sm rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-purple-600/40 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
-              {loading ? (
-                "Memverifikasi..."
-              ) : (
-                <>
-                  <span>Masuk ke Dashboard</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
-              )}
+              <span>{loading ? "Memverifikasi..." : "Masuk ke Portal"}</span>
+              <ArrowRight className="w-4 h-4" />
             </button>
           </form>
 
-          {/* Quick Demo Login Preset */}
-          <div className="pt-2 border-t border-white/10 space-y-2.5">
-            <div className="text-[11px] uppercase tracking-wider font-semibold text-purple-300/80 text-center">
-              Akses Cepat Pengujian (1-Click Demo)
+          {/* Quick Demo Access Preset Button */}
+          <div className="pt-4 border-t border-white/10 space-y-2.5 text-center">
+            <div className="text-[11px] text-purple-200/60 font-medium">
+              Demo Preview Account
             </div>
             <button
               type="button"
               onClick={() => handleQuickLogin("admin@gapai.id", "admin123")}
-              className="w-full py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs text-purple-200 transition flex items-center justify-between"
+              className="w-full py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-purple-200 text-xs font-semibold flex items-center justify-center gap-2 transition"
             >
-              <span className="font-mono">admin@gapai.id</span>
-              <span className="text-[10px] bg-purple-500/30 text-purple-200 px-2 py-0.5 rounded-full">
-                Use Preset
-              </span>
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>Gunakan Akun Demo (admin@gapai.id)</span>
             </button>
           </div>
         </div>
 
-        {/* Security Footer Notice */}
-        <div className="flex items-center justify-center gap-1.5 text-xs text-purple-300/60">
-          <ShieldCheck className="w-4 h-4" />
-          <span>Sesi Terenkripsi & Terproteksi</span>
+        {/* Footer Note */}
+        <div className="text-center text-xs text-purple-200/50 flex items-center justify-center gap-1.5">
+          <ShieldCheck className="w-3.5 h-3.5" />
+          <span>Sesi aman terenkripsi - Khusus Tim HR & Psikolog</span>
         </div>
       </div>
     </div>
